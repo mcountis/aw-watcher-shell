@@ -74,26 +74,28 @@ function aw_ensure_bucket() {
 #
 # Params:
 # - duration
+# - timestamp $(date -d @1700393474 +%FT%T.%N%:z)
 # - command number
 # - exit status code
 # - command string
 #
 function aw_post_event() {
     local duration=${1:-0}
-    local cmd_no=${2:-0}
-    local code=${3:-1}
-    local cwd="${4}"
-    local cmd_raw="${@:5}"
+    local timestamp=${2:-0}
+    local cmd_no=${3:-0}
+    local code=${4:-1}
+    local cwd="${5}"
+    local cmd_raw="${@:6}"
     # escape any double quotes
     local cmd="${cmd_raw//\"/\\\"}"
-    event_fmt='{"duration":%d,"data":{"cmdNo":%d,"session":"%s","cmdStr":"%s","code":%d, "cwd":"%s"}}'
+    event_fmt='[{"duration":%d, "timestamp":%s, "data":{"cmdNo":%d,"session":"%s","cmdStr":"%s","code":%d, "cwd":"%s"}}]'
     # printf "$event_fmt" ${duration} ${cmd_no} ${ASH_SESSION_ID} "${cmd}" ${code} "${cwd}"
     res=$(curl \
         --silent \
         --fail \
         --output /dev/null \
         --write-out "%{http_code}" \
-        --data "$(printf "$event_fmt" ${duration} ${cmd_no} ${ASH_SESSION_ID} "${cmd}" ${code} "${cwd}")" \
+        --data "$(printf "$event_fmt" ${duration} ${timestamp} ${cmd_no} ${ASH_SESSION_ID} "${cmd}" ${code} "${cwd}")" \
         --header "Content-Type: application/json" \
         --request POST "localhost:5600/api/0/buckets/aw-watcher-shell_`hostname`/events")
 

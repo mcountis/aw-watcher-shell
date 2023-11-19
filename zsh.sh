@@ -72,7 +72,8 @@ function precmd() {
     local rval=$?
     local cmd=($(ASH=1 __ash_last_command))
     local duration=$((${cmd[3]}-${cmd[2]}))
-    aw_post_event ${duration} ${cmd[1]} ${rval} "${cmd_cwd}" "${cmd[@]:3}"
+    local timestamp=$(date -s @${cmd[2]} +%FT%T.%N%:z)
+    aw_post_event ${duration} ${timestamp} ${cmd[1]} ${rval} "${cmd_cwd}" "${cmd[@]:3}"
     ASH=1 __ash_original_precmd
     cmd_cwd="${PWD}"
     return rval
