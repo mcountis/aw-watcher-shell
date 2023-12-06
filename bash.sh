@@ -133,7 +133,7 @@ function __ash_log() {
   local pipes="$( sed -e 's: :_:g' <<< "${@}" )"
 
   local duration=$((${end}-${start}))
-  local timestamp=$(date -s @${start} +%FT%T.%N%:z)
+  local timestamp=$(date --date @${start} +%FT%T.%N%:z)
   aw_post_event ${duration} ${timestamp} ${no} ${rval} "${cmd_cwd}" "${cmd}"
   cmd_cwd="${PWD}"
 }
